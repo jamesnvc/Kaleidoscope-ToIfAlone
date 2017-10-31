@@ -45,7 +45,7 @@ const Key keymaps[][ROWS][COLS] PROGMEM = {
     Key_RightShift, Key_RightAlt, Key_Spacebar, Key_RightControl,
     Key_skip),
 
-  [_NUMPAD] = KEYPMAP_STACKED
+  [_NUMPAD] = KEYMAP_STACKED
   (
 ___, ___, ___, ___, ___, ___, ___,
    ___, ___, ___, ___, ___, ___, ___,

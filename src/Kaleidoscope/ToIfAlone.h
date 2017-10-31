@@ -28,9 +28,13 @@ namespace kaleidoscope {
 class ToIfAlone : public KaleidoscopePlugin {
   public:
    class KeyBinding {
-     public:
-      Key input;
-      uint16_t layer;
+    public:
+     //Empty constructor; set the vars separately
+     KeyBinding(void) {}
+     //Constructor with input and output
+     KeyBinding(Key input_, uint16_t layer_);
+     Key input;
+     uint16_t layer;
    };
 
    ToIfAlone(void);

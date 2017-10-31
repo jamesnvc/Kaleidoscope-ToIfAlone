@@ -21,6 +21,12 @@
 
 namespace kaleidoscope {
 
+//Constructor with input and output
+ToIfAlone::KeyBinding::KeyBinding(Key input_, uint16_t layer_) {
+  input = input_;
+  output = output_;
+}
+
 ToIfAlone::KeyBinding * ToIfAlone::map;
 Key ToIfAlone::current_pressed_;
 bool ToIfAlone::using_layer_ = false;

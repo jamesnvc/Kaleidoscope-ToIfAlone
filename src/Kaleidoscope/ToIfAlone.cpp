@@ -21,7 +21,7 @@
 
 namespace kaleidoscope {
 
-//Constructor with input and output
+//Constructor with input key and layer number
 ToIfAlone::KeyBinding::KeyBinding(Key input_, uint16_t layer_) {
   input = input_;
   layer = layer_;
@@ -32,6 +32,7 @@ Key ToIfAlone::current_pressed_;
 bool ToIfAlone::using_layer_ = false;
 
 ToIfAlone::ToIfAlone() {
+  // Default to empty map
   static ToIfAlone::KeyBinding defaultmap[] = {
     TOIFALONE_MAP_END
   };
@@ -72,6 +73,8 @@ Key ToIfAlone::eventHandlerHook(Key mapped_key, byte row, byte col, uint8_t key_
         }
       }
     } else {
+      // A mapped key is being held and another key was pressed
+      // Get the pressed key in the layer the current key shifts to
       using_layer_ = true;
       for (uint8_t i = 0; map[i].input.raw != Key_NoKey.raw; i++) {
         if (map[i].input.raw == current_pressed_.raw) {
@@ -80,9 +83,13 @@ Key ToIfAlone::eventHandlerHook(Key mapped_key, byte row, byte col, uint8_t key_
       }
     }
   } else if (keyIsPressed(key_state) && current_pressed_.raw != Key_NoKey.raw) {
+    // If a mapped key is currently being pressed, pretend no key is
+    // being pressed for now
     if (current_pressed_.raw == mapped_key.raw) {
       return Key_NoKey;
     }
+    // If a mapped key is held and some other key is pressed, send the
+    // pressed key in the shifted layer
     using_layer_ = true;
     for (uint8_t i = 0; map[i].input.raw != Key_NoKey.raw; i++) {
       if (map[i].input.raw == current_pressed_.raw) {
@@ -92,13 +99,17 @@ Key ToIfAlone::eventHandlerHook(Key mapped_key, byte row, byte col, uint8_t key_
   } else if (keyToggledOff(key_state) &&
              current_pressed_.raw != Key_NoKey.raw &&
              current_pressed_.raw == mapped_key.raw) {
+    // If a mapped key was held and has been released..
     if (!using_layer_) {
+      // ...send the mapped key by itself if no other keys were pressed
       handleKeyswitchEvent(current_pressed_, row, col, IS_PRESSED | INJECTED);
       hid::sendKeyboardReport();
     }
+    // ...and in any case, clear the state
     current_pressed_.raw = Key_NoKey.raw;
     using_layer_ = false;
   }
+  // Default to returning the inputted key
   return mapped_key;
 }
 

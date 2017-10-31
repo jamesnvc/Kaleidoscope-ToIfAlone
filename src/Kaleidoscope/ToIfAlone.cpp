@@ -48,6 +48,14 @@ Key ToIfAlone::eventHandlerHook(Key mapped_key, byte row, byte col, uint8_t key_
     return mapped_key;
 
   if (!keyIsPressed(key_state) && !keyWasPressed(key_state)) {
+    if (current_pressed_.raw != Key_NoKey.raw) {
+      return Key_NoKey;
+    }
+    for (uint8_t i = 0; map[i].input.raw != Key_NoKey.raw; i++) {
+      if (map[i].input.raw == mapped_key.raw) {
+        return Key_NoKey;
+      }
+    }
     return mapped_key;
   }
 
@@ -66,10 +74,19 @@ Key ToIfAlone::eventHandlerHook(Key mapped_key, byte row, byte col, uint8_t key_
     } else {
       using_layer_ = true;
       for (uint8_t i = 0; map[i].input.raw != Key_NoKey.raw; i++) {
-        if (map[i].input.raw == mapped_key.raw) {
-          mapped_key = Layer.getKey(map[i].layer, row, col);
-          break;
+        if (map[i].input.raw == current_pressed_.raw) {
+          return Layer.getKey(map[i].layer, row, col);
         }
+      }
+    }
+  } else if (keyIsPressed(key_state) && current_pressed_.raw != Key_NoKey.raw) {
+    if (current_pressed_.raw == mapped_key.raw) {
+      return Key_NoKey;
+    }
+    using_layer_ = true;
+    for (uint8_t i = 0; map[i].input.raw != Key_NoKey.raw; i++) {
+      if (map[i].input.raw == current_pressed_.raw) {
+          return Layer.getKey(map[i].layer, row, col);
       }
     }
   } else if (keyToggledOff(key_state) &&

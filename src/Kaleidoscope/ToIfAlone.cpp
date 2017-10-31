@@ -24,7 +24,7 @@ namespace kaleidoscope {
 //Constructor with input and output
 ToIfAlone::KeyBinding::KeyBinding(Key input_, uint16_t layer_) {
   input = input_;
-  output = output_;
+  layer = layer_;
 }
 
 ToIfAlone::KeyBinding * ToIfAlone::map;
@@ -47,6 +47,10 @@ Key ToIfAlone::eventHandlerHook(Key mapped_key, byte row, byte col, uint8_t key_
   if (key_state & INJECTED)
     return mapped_key;
 
+  if (!keyIsPressed(key_state) && !keyWasPressed(key_state)) {
+    return mapped_key;
+  }
+
   if (keyToggledOn(key_state)) {
     // If we aren't already holding down a mapped key, check if the
     // just pressed key is one
@@ -60,16 +64,13 @@ Key ToIfAlone::eventHandlerHook(Key mapped_key, byte row, byte col, uint8_t key_
         }
       }
     } else {
-      if (!using_layer_) {
-        using_layer_ = true;
-        for (uint8_t i = 0; map[i].input.raw != Key_NoKey.raw; i++) {
-          if (map[i].input.raw == mapped_key.raw) {
-            Layer.on(map[i].layer);
-            break;
-          }
+      using_layer_ = true;
+      for (uint8_t i = 0; map[i].input.raw != Key_NoKey.raw; i++) {
+        if (map[i].input.raw == mapped_key.raw) {
+          mapped_key = Layer.getKey(map[i].layer, row, col);
+          break;
         }
       }
-      mapped_key = Layer.lookup(row, col);
     }
   } else if (keyToggledOff(key_state) &&
              current_pressed_.raw != Key_NoKey.raw &&
@@ -77,13 +78,6 @@ Key ToIfAlone::eventHandlerHook(Key mapped_key, byte row, byte col, uint8_t key_
     if (!using_layer_) {
       handleKeyswitchEvent(current_pressed_, row, col, IS_PRESSED | INJECTED);
       hid::sendKeyboardReport();
-    } else {
-      for (uint8_t i = 0; map[i].input.raw != Key_NoKey.raw; i++) {
-        if (map[i].input.raw == mapped_key.raw) {
-          Layer.off(map[i].layer);
-          break;
-        }
-      }
     }
     current_pressed_.raw = Key_NoKey.raw;
     using_layer_ = false;

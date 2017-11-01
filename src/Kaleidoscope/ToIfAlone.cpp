@@ -104,6 +104,8 @@ Key ToIfAlone::eventHandlerHook(Key mapped_key, byte row, byte col, uint8_t key_
       // ...send the mapped key by itself if no other keys were pressed
       handleKeyswitchEvent(current_pressed_, row, col, IS_PRESSED | INJECTED);
       hid::sendKeyboardReport();
+    } else {
+      KeyboardHardware.maskHeldKeys();
     }
     // ...and in any case, clear the state
     current_pressed_.raw = Key_NoKey.raw;

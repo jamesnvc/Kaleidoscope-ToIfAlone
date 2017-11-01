@@ -48,12 +48,13 @@ Key ToIfAlone::eventHandlerHook(Key mapped_key, byte row, byte col, uint8_t key_
   if (key_state & INJECTED)
     return mapped_key;
 
-  if (hid::wasModifierKeyActive(Key_LeftShift) ||
-      hid::wasModifierKeyActive(Key_RightShift) ||
-      hid::wasModifierKeyActive(Key_RightControl) ||
-      hid::wasModifierKeyActive(Key_LeftControl) ||
-      hid::wasModifierKeyActive(Key_RightAlt) ||
-      hid::wasModifierKeyActive(Key_LeftAlt)) {
+  if (current_pressed_.raw == Key_NoKey.raw &&
+      (hid::wasModifierKeyActive(Key_LeftShift) ||
+       hid::wasModifierKeyActive(Key_RightShift) ||
+       hid::wasModifierKeyActive(Key_RightControl) ||
+       hid::wasModifierKeyActive(Key_LeftControl) ||
+       hid::wasModifierKeyActive(Key_RightAlt) ||
+       hid::wasModifierKeyActive(Key_LeftAlt))) {
     return mapped_key;
   }
 

@@ -35,7 +35,7 @@ void setup(void) {
 
 ## Plugin methods
 
-The plugin provides the `ToIfAlone` obkect, with the following property:
+The plugin provides the `ToIfAlone` object, with the following property:
 
 ### `.map`
 

@@ -51,6 +51,8 @@ Key ToIfAlone::eventHandlerHook(Key mapped_key, byte row, byte col, uint8_t key_
   if (current_pressed_.raw == Key_NoKey.raw &&
       (hid::wasModifierKeyActive(Key_LeftShift) ||
        hid::wasModifierKeyActive(Key_RightShift) ||
+       hid::wasModifierKeyActive(Key_LeftGui) ||
+       hid::wasModifierKeyActive(Key_RightGui) ||
        hid::wasModifierKeyActive(Key_RightControl) ||
        hid::wasModifierKeyActive(Key_LeftControl) ||
        hid::wasModifierKeyActive(Key_RightAlt) ||
